@@ -8,13 +8,6 @@ public class BusRide extends RoadTravel implements Reservable {
     }
 
     @Override
-    public void reserve(int numberOfSeats) throws NoFreeSeatsException {
-        if (this.getOccupiedSeats() + numberOfSeats > this.getSeats())
-            throw new NoFreeSeatsException("Not enough free seats to reserve.");
-        else this.setOccupiedSeats(this.getOccupiedSeats() + numberOfSeats);
-    }
-
-    @Override
     public void print() {
         System.out.println("---Bus Ride---");
         super.print();

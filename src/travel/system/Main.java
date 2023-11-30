@@ -2,6 +2,7 @@ package travel.system;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
@@ -20,7 +21,7 @@ public class Main {
         travels[3] = new NormalFlight(now.minusMinutes(30), 240, cities[0], cities[1], 200, 0, "F456");
         travels[4] = new TrainRide(now.plusHours(2), 1200, cities[3], cities[2], 1000, 10, "T2365");
 
-        //printAllTravels(travels);
+        printAllTravels(travels);
         for (int i = 0; i < travels.length; i++) {
             try {
                 if (travels[i] instanceof Reservable)
@@ -30,10 +31,42 @@ public class Main {
             }
         }
 
-        ((Rentable) travels[2]).rent("Kowalski");
+        ((Rentable)travels[2]).rent("Kowalski");
 
-        System.out.println("The date change by Train Ride: " + travels[4].doesChangeDate());
-        System.out.println("National Bus ride: " + travels[0].isNational());
-        System.out.println(travels[4].getStatus());
+        System.out.println("The same country (" + cities[2].getName() + "," + cities[1].getName() + "): " + cities[2].isTheSameCountry(cities[1]));
+        System.out.println("The same time (" + cities[2].getName() + "," + cities[1].getName() + "): " + cities[2].isTheSameTime(cities[1]));
+
+        printAllTravels(travels);
+
+        System.out.println("The date change - train ride: " + travels[4].doesChangeDate());
+        System.out.println("National - bus ride: " + travels[0].isNational());
+    }
+
+    public static void printAllTravels(Travel... travels) {
+        Arrays.sort(travels, (t1, t2) -> {
+            String status1 = t1.getTravelStatus();
+            String status2 = t2.getTravelStatus();
+
+            if (status1.equals("COMPLETED")) return -1;
+            if (status2.equals("COMPLETED")) return 1;
+            if (status1.equals("IN_PROGRESS")) return -1;
+            if (status2.equals("IN_PROGRESS")) return 1;
+
+            return 0; // oba NOT_STARTED
+        });
+
+        String lastStatus = "";
+        System.out.println();
+
+        for (Travel t : travels) {
+            String currentStatus = t.getTravelStatus();
+            if (!currentStatus.equals(lastStatus)) {
+                System.out.println("\u001B[34m********** " + currentStatus + " **********\u001B[0m");
+                lastStatus = currentStatus;
+            }
+            t.print();
+            System.out.println();
+        }
+        System.out.println("-----------------------------------------------------------------------------------------------------------------\n");
     }
 }

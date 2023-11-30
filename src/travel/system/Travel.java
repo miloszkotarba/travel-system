@@ -16,10 +16,6 @@ public class Travel {
 
     private TravelStatus status;
 
-    private enum TravelStatus {
-        COMPLETED, IN_PROGRESS, NOT_STARTED
-    }
-
     public Travel(LocalDateTime startTime, int duration, City startCity, City endCity, int seats, int occupiedSeats) {
         this.startTime = startTime;
         this.duration = duration;
@@ -31,16 +27,12 @@ public class Travel {
     }
 
     public void updateStatus() {
-        LocalDateTime currentTime = LocalDateTime.now();
+        this.status = TravelStatus.calculateStatus(LocalDateTime.now(), this.getStartTime(), this.getDuration());
+    }
 
-        if (currentTime.isBefore(this.getStartTime()))
-            status = TravelStatus.NOT_STARTED;
-
-        else if (currentTime.isAfter(startTime.plusMinutes(this.getDuration())))
-            status = TravelStatus.COMPLETED;
-
-        else
-            status = TravelStatus.IN_PROGRESS;
+    public String getTravelStatus() {
+        updateStatus();
+        return this.status.getStatus();
     }
 
     public LocalDateTime getStartTime() {
@@ -91,11 +83,6 @@ public class Travel {
         this.occupiedSeats = occupiedSeats;
     }
 
-    public String getStatus() {
-        updateStatus();
-        return this.status.toString();
-    }
-
     public void print() {
         ZonedDateTime departureZonedDateTime = ZonedDateTime.of(this.getStartTime(), this.getStartCity().getZoneId());
         ZonedDateTime arrivalZonedDateTime = departureZonedDateTime.withZoneSameInstant(this.getStartCity().getZoneId()).plusMinutes(this.getDuration());
@@ -122,6 +109,12 @@ public class Travel {
         LocalDate endDate = this.getStartTime().plusMinutes(this.getDuration()).atZone(endZone).toLocalDate();
 
         return !startDate.isEqual(endDate);
+    }
+
+    public void reserve(int numberOfSeats) throws NoFreeSeatsException {
+        if (this.getOccupiedSeats() + numberOfSeats > this.getSeats())
+            throw new NoFreeSeatsException("Not enough free seats to reserve.");
+        else this.setOccupiedSeats(this.getOccupiedSeats() + numberOfSeats);
     }
 
 }

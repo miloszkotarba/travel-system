@@ -1,6 +1,8 @@
 package travel.system;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 public class City {
     private String name;
@@ -35,5 +37,15 @@ public class City {
 
     public void setZoneId(ZoneId zoneId) {
         this.zoneId = zoneId;
+    }
+
+    public boolean isTheSameCountry(City city2) {
+        return this.getCountry().equals(city2.getCountry());
+    }
+
+    public boolean isTheSameTime(City otherCity) {
+        LocalDateTime thisCityTime = LocalDateTime.now(this.getZoneId()).truncatedTo(ChronoUnit.SECONDS); //ucina do sekund
+        LocalDateTime otherCityTime = LocalDateTime.now(otherCity.getZoneId()).truncatedTo(ChronoUnit.SECONDS);
+        return thisCityTime.equals(otherCityTime);
     }
 }
